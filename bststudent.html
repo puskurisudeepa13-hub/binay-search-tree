@@ -1,0 +1,915 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Binary Search Tree Student Manager</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            background: #f2f5f9;
+            color: #222;
+        }
+
+        header {
+            background: #243b55;
+            color: white;
+            text-align: center;
+            padding: 25px;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 30px;
+        }
+
+        header p {
+            margin: 8px 0 0;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 25px auto;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        h2 {
+            color: #243b55;
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #bbb;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        button {
+            padding: 11px 18px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 15px;
+            margin: 5px;
+        }
+
+        .add {
+            background: #198754;
+            color: white;
+        }
+
+        .search {
+            background: #0d6efd;
+            color: white;
+        }
+
+        .delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .reset {
+            background: #6c757d;
+            color: white;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 12px;
+            background: #eef3f8;
+            border-radius: 6px;
+            font-weight: bold;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            border: 1px solid #ddd;
+            padding: 12px;
+            text-align: center;
+        }
+
+        th {
+            background: #243b55;
+            color: white;
+        }
+
+        tr:nth-child(even) {
+            background: #f7f7f7;
+        }
+
+        #tree {
+            min-height: 100px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .tree-node {
+            display: inline-block;
+            margin: 10px;
+            padding: 12px 18px;
+            border-radius: 50%;
+            background: #243b55;
+            color: white;
+            text-align: center;
+            min-width: 70px;
+        }
+
+        .empty {
+            color: #777;
+            font-style: italic;
+        }
+
+        @media(max-width: 700px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Binary Search Tree Student Manager</h1>
+    <p>Micro Project using HTML, CSS and JavaScript</p>
+</header>
+
+<div class="container">
+
+    <!-- ADD STUDENT -->
+    <div class="card">
+        <h2>➕ Add Student</h2>
+
+        <div class="form-grid">
+
+            <input type="number"
+                   id="prn"
+                   placeholder="Enter PRN">
+
+            <input type="text"
+                   id="name"
+                   placeholder="Enter Student Name">
+
+            <input type="number"
+                   id="marks"
+                   placeholder="Enter Marks">
+
+            <input type="text"
+                   id="branch"
+                   placeholder="Enter Branch">
+
+        </div>
+
+        <button class="add" onclick="addStudent()">
+            Add Student
+        </button>
+
+        <button class="reset" onclick="resetTree()">
+            Reset Tree
+        </button>
+
+        <div id="message" class="message">
+            Enter student details and click Add Student.
+        </div>
+    </div>
+
+
+    <!-- SEARCH -->
+    <div class="card">
+
+        <h2>🔍 Search Student</h2>
+
+        <input type="number"
+               id="searchPRN"
+               placeholder="Enter PRN to search">
+
+        <button class="search" onclick="searchStudent()">
+            Search
+        </button>
+
+        <div id="searchResult" class="message">
+            Search result will appear here.
+        </div>
+
+    </div>
+
+
+    <!-- DELETE -->
+    <div class="card">
+
+        <h2>🗑️ Delete Student</h2>
+
+        <input type="number"
+               id="deletePRN"
+               placeholder="Enter PRN to delete">
+
+        <button class="delete" onclick="deleteStudent()">
+            Delete
+        </button>
+
+    </div>
+
+
+    <!-- STUDENT TABLE -->
+    <div class="card">
+
+        <h2>📋 Student Records</h2>
+
+        <table>
+
+            <thead>
+                <tr>
+                    <th>PRN</th>
+                    <th>Name</th>
+                    <th>Marks</th>
+                    <th>Branch</th>
+                </tr>
+            </thead>
+
+            <tbody id="studentTable">
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <!-- BST -->
+    <div class="card">
+
+        <h2>🌳 Binary Search Tree</h2>
+
+        <p>
+            Students are arranged according to their PRN.
+            Smaller PRN values are placed on the left and
+            larger PRN values are placed on the right.
+        </p>
+
+        <div id="tree">
+        </div>
+
+    </div>
+
+
+    <!-- TRAVERSAL -->
+    <div class="card">
+
+        <h2>🔄 BST Traversal</h2>
+
+        <p>
+            <b>Inorder Traversal:</b>
+        </p>
+
+        <div id="inorder" class="message">
+            No students available.
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+    // ==============================
+    // BINARY SEARCH TREE NODE
+    // ==============================
+
+    class StudentNode {
+
+        constructor(prn, name, marks, branch) {
+
+            this.prn = prn;
+            this.name = name;
+            this.marks = marks;
+            this.branch = branch;
+
+            this.left = null;
+            this.right = null;
+        }
+    }
+
+
+    // ==============================
+    // BINARY SEARCH TREE
+    // ==============================
+
+    class StudentBST {
+
+        constructor() {
+            this.root = null;
+        }
+
+
+        // INSERT STUDENT
+        insert(prn, name, marks, branch) {
+
+            let newNode =
+                new StudentNode(
+                    prn,
+                    name,
+                    marks,
+                    branch
+                );
+
+            if (this.root === null) {
+
+                this.root = newNode;
+                return true;
+            }
+
+            let current = this.root;
+
+            while (true) {
+
+                if (prn === current.prn) {
+
+                    return false;
+                }
+
+                if (prn < current.prn) {
+
+                    if (current.left === null) {
+
+                        current.left = newNode;
+                        return true;
+
+                    } else {
+
+                        current = current.left;
+                    }
+
+                } else {
+
+                    if (current.right === null) {
+
+                        current.right = newNode;
+                        return true;
+
+                    } else {
+
+                        current = current.right;
+                    }
+                }
+            }
+        }
+
+
+        // SEARCH STUDENT
+        search(prn) {
+
+            let current = this.root;
+
+            while (current !== null) {
+
+                if (prn === current.prn) {
+                    return current;
+                }
+
+                if (prn < current.prn) {
+
+                    current = current.left;
+
+                } else {
+
+                    current = current.right;
+                }
+            }
+
+            return null;
+        }
+
+
+        // DELETE STUDENT
+        delete(prn) {
+
+            this.root =
+                this.deleteNode(this.root, prn);
+        }
+
+
+        deleteNode(node, prn) {
+
+            if (node === null) {
+                return null;
+            }
+
+
+            if (prn < node.prn) {
+
+                node.left =
+                    this.deleteNode(node.left, prn);
+
+            } else if (prn > node.prn) {
+
+                node.right =
+                    this.deleteNode(node.right, prn);
+
+            } else {
+
+                // No child
+                if (node.left === null &&
+                    node.right === null) {
+
+                    return null;
+                }
+
+
+                // Only right child
+                if (node.left === null) {
+
+                    return node.right;
+                }
+
+
+                // Only left child
+                if (node.right === null) {
+
+                    return node.left;
+                }
+
+
+                // Two children
+                let successor =
+                    this.findMin(node.right);
+
+                node.prn = successor.prn;
+                node.name = successor.name;
+                node.marks = successor.marks;
+                node.branch = successor.branch;
+
+                node.right =
+                    this.deleteNode(
+                        node.right,
+                        successor.prn
+                    );
+            }
+
+            return node;
+        }
+
+
+        findMin(node) {
+
+            while (node.left !== null) {
+
+                node = node.left;
+            }
+
+            return node;
+        }
+
+
+        // INORDER TRAVERSAL
+        inorder(node, result = []) {
+
+            if (node !== null) {
+
+                this.inorder(node.left, result);
+
+                result.push(node);
+
+                this.inorder(node.right, result);
+            }
+
+            return result;
+        }
+
+    }
+
+
+    // ==============================
+    // CREATE BST
+    // ==============================
+
+    let bst = new StudentBST();
+
+
+    // ==============================
+    // ADD STUDENT FUNCTION
+    // ==============================
+
+    function addStudent() {
+
+        let prn =
+            parseInt(
+                document.getElementById("prn").value
+            );
+
+        let name =
+            document.getElementById("name").value.trim();
+
+        let marks =
+            parseFloat(
+                document.getElementById("marks").value
+            );
+
+        let branch =
+            document.getElementById("branch").value.trim();
+
+
+        if (
+            isNaN(prn) ||
+            name === "" ||
+            isNaN(marks) ||
+            branch === ""
+        ) {
+
+            showMessage(
+                "Please enter all student details."
+            );
+
+            return;
+        }
+
+
+        if (marks < 0 || marks > 100) {
+
+            showMessage(
+                "Marks should be between 0 and 100."
+            );
+
+            return;
+        }
+
+
+        let inserted =
+            bst.insert(
+                prn,
+                name,
+                marks,
+                branch
+            );
+
+
+        if (inserted) {
+
+            showMessage(
+                "Student added successfully!"
+            );
+
+            clearInputs();
+
+            displayStudents();
+
+            displayTree();
+
+            displayInorder();
+
+        } else {
+
+            showMessage(
+                "Student with this PRN already exists."
+            );
+        }
+    }
+
+
+    // ==============================
+    // SEARCH FUNCTION
+    // ==============================
+
+    function searchStudent() {
+
+        let prn =
+            parseInt(
+                document.getElementById("searchPRN").value
+            );
+
+
+        if (isNaN(prn)) {
+
+            document.getElementById(
+                "searchResult"
+            ).innerHTML =
+                "Please enter a valid PRN.";
+
+            return;
+        }
+
+
+        let student =
+            bst.search(prn);
+
+
+        if (student !== null) {
+
+            document.getElementById(
+                "searchResult"
+            ).innerHTML =
+
+                "Student Found!<br><br>" +
+
+                "PRN: " + student.prn + "<br>" +
+
+                "Name: " + student.name + "<br>" +
+
+                "Marks: " + student.marks + "<br>" +
+
+                "Branch: " + student.branch;
+
+        } else {
+
+            document.getElementById(
+                "searchResult"
+            ).innerHTML =
+                "Student not found.";
+        }
+    }
+
+
+    // ==============================
+    // DELETE FUNCTION
+    // ==============================
+
+    function deleteStudent() {
+
+        let prn =
+            parseInt(
+                document.getElementById("deletePRN").value
+            );
+
+
+        if (isNaN(prn)) {
+
+            showMessage(
+                "Please enter a valid PRN."
+            );
+
+            return;
+        }
+
+
+        let student =
+            bst.search(prn);
+
+
+        if (student === null) {
+
+            showMessage(
+                "Student not found."
+            );
+
+            return;
+        }
+
+
+        bst.delete(prn);
+
+
+        showMessage(
+            "Student deleted successfully!"
+        );
+
+
+        document.getElementById(
+            "deletePRN"
+        ).value = "";
+
+
+        displayStudents();
+
+        displayTree();
+
+        displayInorder();
+    }
+
+
+    // ==============================
+    // DISPLAY STUDENTS
+    // ==============================
+
+    function displayStudents() {
+
+        let table =
+            document.getElementById(
+                "studentTable"
+            );
+
+        table.innerHTML = "";
+
+
+        let students =
+            bst.inorder(bst.root);
+
+
+        if (students.length === 0) {
+
+            table.innerHTML =
+                "<tr><td colspan='4'>No student records.</td></tr>";
+
+            return;
+        }
+
+
+        students.forEach(student => {
+
+            let row =
+                document.createElement("tr");
+
+
+            row.innerHTML =
+
+                "<td>" + student.prn + "</td>" +
+
+                "<td>" + student.name + "</td>" +
+
+                "<td>" + student.marks + "</td>" +
+
+                "<td>" + student.branch + "</td>";
+
+
+            table.appendChild(row);
+        });
+    }
+
+
+    // ==============================
+    // DISPLAY BST
+    // ==============================
+
+    function displayTree() {
+
+        let tree =
+            document.getElementById("tree");
+
+        tree.innerHTML = "";
+
+
+        if (bst.root === null) {
+
+            tree.innerHTML =
+                "<p class='empty'>BST is empty.</p>";
+
+            return;
+        }
+
+
+        let students =
+            bst.inorder(bst.root);
+
+
+        students.forEach(student => {
+
+            let node =
+                document.createElement("div");
+
+            node.className =
+                "tree-node";
+
+
+            node.innerHTML =
+
+                "<b>" +
+                student.prn +
+                "</b><br>" +
+
+                student.name;
+
+
+            tree.appendChild(node);
+        });
+    }
+
+
+    // ==============================
+    // INORDER
+    // ==============================
+
+    function displayInorder() {
+
+        let result =
+            document.getElementById(
+                "inorder"
+            );
+
+
+        let students =
+            bst.inorder(bst.root);
+
+
+        if (students.length === 0) {
+
+            result.innerHTML =
+                "No students available.";
+
+            return;
+        }
+
+
+        result.innerHTML =
+            students
+            .map(student => student.prn)
+            .join(" → ");
+    }
+
+
+    // ==============================
+    // CLEAR INPUTS
+    // ==============================
+
+    function clearInputs() {
+
+        document.getElementById(
+            "prn"
+        ).value = "";
+
+        document.getElementById(
+            "name"
+        ).value = "";
+
+        document.getElementById(
+            "marks"
+        ).value = "";
+
+        document.getElementById(
+            "branch"
+        ).value = "";
+    }
+
+
+    // ==============================
+    // MESSAGE
+    // ==============================
+
+    function showMessage(message) {
+
+        document.getElementById(
+            "message"
+        ).innerHTML = message;
+    }
+
+
+    // ==============================
+    // RESET TREE
+    // ==============================
+
+    function resetTree() {
+
+        if (
+            confirm(
+                "Are you sure you want to delete all student records?"
+            )
+        ) {
+
+            bst =
+                new StudentBST();
+
+
+            displayStudents();
+
+            displayTree();
+
+            displayInorder();
+
+
+            showMessage(
+                "All student records have been deleted."
+            );
+        }
+    }
+
+
+    // INITIAL DISPLAY
+
+    displayStudents();
+
+    displayTree();
+
+    displayInorder();
+
+</script>
+
+</body>
+</html>
